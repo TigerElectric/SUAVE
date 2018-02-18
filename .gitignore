@@ -1,0 +1,8 @@
+# ignore certain files
+*.log
+*.DS_Store
+*.pyc
+
+# ignore contents of SUAVE folder
+./SUAVE-1.0.0
+./main/__pycache__

@@ -1,0 +1,8 @@
+version: '2'
+services:
+  base:
+    build: .
+    container_name: SUAVE_base
+    volumes:
+      - ./main:/main
+    command: start

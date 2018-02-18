@@ -1,0 +1,20 @@
+FROM python:2.7
+
+MAINTAINER Jan Bernhard <janb@princeton.edu>
+
+# Upgrade pip
+RUN pip install --upgrade pip
+
+# Install requirements
+COPY ./setup /setup
+RUN pip install -r /setup/requirements.txt
+
+# Install SUAVE
+ADD ./SUAVE-1.0.0 /SUAVE
+WORKDIR /SUAVE/trunk
+RUN python setup.py install
+
+# Add project files
+ADD ./main /main 
+
+ENTRYPOINT ["/setup/entrypoint.sh"]
