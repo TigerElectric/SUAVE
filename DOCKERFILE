@@ -6,15 +6,23 @@ MAINTAINER Jan Bernhard <janb@princeton.edu>
 RUN pip install --upgrade pip
 
 # Install requirements
-COPY ./setup /setup
-RUN pip install -r /setup/requirements.txt
+RUN mkdir /project && mkdir /project/setup
+ADD ./project/setup/ /project/setup/
+RUN pip install -r /project/setup/requirements.txt
 
 # Install SUAVE
-ADD ./SUAVE-1.0.0 /SUAVE
-WORKDIR /SUAVE/trunk
+WORKDIR /project/setup/SUAVE/trunk
 RUN python setup.py install
 
 # Add project files
-ADD ./main /main 
+WORKDIR /project
+RUN mkdir /main
 
-ENTRYPOINT ["/setup/entrypoint.sh"]
+RUN pwd && ls
+COPY ./entrypoint.sh ./entrypoint.sh
+RUN chmod +x entrypoint.sh && ls && pwd
+
+ADD ./project/main/ /project/main/ 
+
+ENTRYPOINT ["entrypoint.sh"]
+# CMD ["sleep 99999999;"]

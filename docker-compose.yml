@@ -4,5 +4,5 @@ services:
     build: .
     container_name: SUAVE_base
     volumes:
-      - ./main:/main
+      - ./project:/project
     command: start
