@@ -1,8 +1,9 @@
 version: '2'
 services:
   base:
-    build: .
+    build: ./
     container_name: SUAVE_base
     volumes:
-      - ./project:/project
+      - ./:/project
+    entrypoint: sh /project/start.sh
     command: start

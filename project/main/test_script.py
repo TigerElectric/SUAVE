@@ -14,9 +14,10 @@ import SUAVE
 from SUAVE.Core import Units
 
 import numpy as np
+import matplotlib.pyplot as plt
 import matplotlib
 matplotlib.use('Agg') # enables use in docker container
-import matplotlib.pyplot as plt
+
 
 
 
@@ -70,4 +71,4 @@ if __name__ == '__main__':
     fig = main()
     
     # you can call plt.show() here
-    plt.savefig(fig,format=".png")
+    plt.savefig("fig.png")

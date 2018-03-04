@@ -18,11 +18,15 @@ RUN python setup.py install
 WORKDIR /project
 RUN mkdir /main
 
-RUN pwd && ls
-COPY ./entrypoint.sh ./entrypoint.sh
-RUN chmod +x entrypoint.sh && ls && pwd
+# RUN pwd && ls
+# COPY ./start.sh ./start.sh
+# RUN chmod +x start.sh
 
-ADD ./project/main/ /project/main/ 
 
-ENTRYPOINT ["entrypoint.sh"]
+RUN pwd
+# ADD ./project/main /project/main
+ADD ./project/main /main
+RUN ls -la
+
+# ENTRYPOINT ["entrypoint.sh"]
 # CMD ["sleep 99999999;"]
