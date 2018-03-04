@@ -9,6 +9,8 @@ RUN pip install --upgrade pip
 RUN mkdir /project && mkdir /project/setup
 ADD ./project/setup/ /project/setup/
 RUN pip install -r /project/setup/requirements.txt
+## So matplotlib works without Display variable
+RUN echo "backend: Agg" > ~/.config/matplotlib/matplotlibrc
 
 # Install SUAVE
 WORKDIR /project/setup/SUAVE/trunk
@@ -18,15 +20,7 @@ RUN python setup.py install
 WORKDIR /project
 RUN mkdir /main
 
-# RUN pwd && ls
-# COPY ./start.sh ./start.sh
-# RUN chmod +x start.sh
-
-
 RUN pwd
 # ADD ./project/main /project/main
 ADD ./project/main /main
 RUN ls -la
-
-# ENTRYPOINT ["entrypoint.sh"]
-# CMD ["sleep 99999999;"]
