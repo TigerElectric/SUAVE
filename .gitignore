@@ -6,3 +6,4 @@
 # ignore contents of SUAVE folder
 project/setup/SUAVE
 /main/__pycache__
+./venv
