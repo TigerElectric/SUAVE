@@ -2,8 +2,9 @@
 *.log
 *.DS_Store
 *.pyc
+*.json
 
 # ignore contents of SUAVE folder
-project/setup/SUAVE
-/main/__pycache__
-./venv
+project/setup/SUAVE/
+main/__pycache__
+venv/

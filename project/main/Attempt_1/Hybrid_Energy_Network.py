@@ -1,9 +1,12 @@
 import SUAVE
-from SUAVE.Core import Units
+from SUAVE.Core import Units, Data
 from Parallel_Battery_Propeller_Hybrid_Interp import Series_Battery_Propeller_Hybrid_Interp
 from Internal_Combustion_Engine import Internal_Combustion_Engine
 from SUAVE.Methods.Propulsion.electric_motor_sizing import size_from_kv
 from SUAVE.Methods.Power.Battery.Sizing import initialize_from_mass
+from SUAVE.Methods.Propulsion import propeller_design
+
+import numpy as np 
 
 def battery():
     bat = SUAVE.Components.Energy.Storages.Batteries.Constant_Mass.Lithium_Ion()
@@ -14,18 +17,37 @@ def battery():
     initialize_from_mass(bat,bat.mass_properties.mass)
     return bat
 
-def motor():
-    mot = SUAVE.Components.Energy.Converters.Motor_Lo_Fid()
-    kv                       = 800. * Units['rpm/volt'] # RPM/volt is standard
-    mot                      = size_from_kv(mot, kv)    
-    mot.gear_ratio           = 1. # Gear ratio, no gearbox
-    mot.gearbox_efficiency   = 1. # Gear box efficiency, no gearbox
-    mot.motor_efficiency     = 0.825
+def motor(prop):
+    mot = SUAVE.Components.Energy.Converters.Motor()
+    mot.resistance           = 0.008
+    mot.no_load_current      = 4.5  * Units.ampere
+    mot.speed_constant       = 120. * Units['rpm'] # RPM/volt converted to (rad/s)/volt    
+    mot.propeller_radius     = prop.prop_attributes.tip_radius
+    mot.propeller_Cp         = prop.prop_attributes.Cp
+    mot.gear_ratio           = 12. # Gear ratio
+    mot.gearbox_efficiency   = .98 # Gear box efficiency
+    mot.expected_current     = 160. # Expected current
+    mot.mass_properties.mass = 2.0  * Units.kg
     return mot
 
 def propeller():
-    prop = SUAVE.Components.Energy.Converters.Propeller_Lo_Fid()
-    prop.propulsive_efficiency = 0.825
+    '''
+    Parameters need to be added
+    '''
+    prop_attributes = Data()
+    prop_attributes.number_blades       = 2.0
+    prop_attributes.freestream_velocity = 40.0 * Units['m/s']# freestream
+    prop_attributes.angular_velocity    = 150. * Units['rpm']
+    prop_attributes.tip_radius          = 4.25 * Units.meters
+    prop_attributes.hub_radius          = 0.05 * Units.meters
+    prop_attributes.design_Cl           = 0.7
+    prop_attributes.design_altitude     = 14.0 * Units.km
+    prop_attributes.design_thrust       = 0.0 
+    prop_attributes.design_power        = 3500.0 * Units.watts
+    prop_attributes                     = propeller_design(prop_attributes)
+    
+    prop = SUAVE.Components.Energy.Converters.Propeller()
+    prop.prop_attributes = prop_attributes
     return prop
 
 def payload():
@@ -59,13 +81,13 @@ def combustion_engine():
 def hybrid_engine():
     network = Series_Battery_Propeller_Hybrid_Interp()
 
-    network.motor             = motor()
     network.propeller         = propeller()
+    network.motor             = motor(network.propeller)
     network.esc               = esc()
     network.avionics          = avionics()
     network.payload           = payload()
     network.battery           = battery()
-    network.nacelle_diameter  = None
+    network.nacelle_diameter  = 0.2 * Units.meters
     network.engine_length     = 4*Units.ft
     network.number_of_engines = 1
     network.voltage           = None
@@ -75,6 +97,8 @@ def hybrid_engine():
     network.max_omega         = 0.0
     network.motors_per_prop   = 1
     network.number_of_props   = 1
+    network.areas             = Data()
+    network.areas.wetted      = 0.01*(2*np.pi*0.01/2.)
     network.tag               = 'network'
 
     return network
